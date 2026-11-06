@@ -1,0 +1,72 @@
+## Visual Studio & .NET .gitignore
+
+# Build and compilation outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Xx]64/
+[Xx]86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]uild/
+
+# Visual Studio files
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+
+# JetBrains Rider / Resharper
+.idea/
+*.sln.iml
+_ReSharper*/
+
+# NuGet Packages & cache
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.assets.json
+
+# Test and Code Coverage results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Publish output
+publish/
+*.Publish.xml
+*.pubxml
+*.azurePubxml
+
+# Logs & temp files
+*.log
+*.tmp
+*.temp
+
+# Sensitive files / Local config
+appsettings*.local.json
+secrets.json
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
