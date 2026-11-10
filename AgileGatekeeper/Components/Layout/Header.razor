@@ -1,0 +1,126 @@
+@inject IAuthService AuthService
+@inject IThemeService ThemeService
+
+<header class="h-20 bg-transparent px-4 sm:px-8 flex items-center justify-between shrink-0 z-20">
+    <!-- Left Section: Mobile Menu Button + Greeting -->
+    <div class="flex items-center gap-3">
+        <!-- Mobile Drawer Hamburger -->
+        <button type="button"
+                @onclick="OnOpenMobileSidebar"
+                class="md:hidden flex w-9 h-9 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 items-center justify-center transition-colors"
+                aria-label="Abrir menú">
+            <span class="material-symbols-outlined text-[22px]">menu</span>
+        </button>
+
+        <!-- Welcome Greeting -->
+        <div class="flex flex-col justify-center">
+            <h1 class="font-display text-[18px] sm:text-[22px] font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
+                Welcome back, @GetFirstName()!
+            </h1>
+            <p class="text-[11.5px] sm:text-[12.5px] text-slate-400 dark:text-slate-500 font-normal leading-normal mt-0.5">
+                You have @AuthService.CurrentUser.DeliveredParcelsCount new delivered parcels.
+            </p>
+        </div>
+    </div>
+
+    <!-- Right Section: Action Buttons & Theme Switcher -->
+    <div class="flex items-center gap-2 sm:gap-2.5">
+        <!-- Circular Notification Icon -->
+        <button type="button"
+                aria-label="Notifications"
+                title="Notificaciones"
+                class="relative w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors shadow-xs">
+            <span class="material-symbols-outlined text-[17px]">notifications</span>
+            @if (AuthService.CurrentUser.UnreadNotificationsCount > 0)
+            {
+                <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white dark:ring-slate-900"></span>
+            }
+        </button>
+
+        <!-- Circular Search Icon -->
+        <button type="button"
+                aria-label="Search"
+                title="Buscar"
+                class="w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors shadow-xs">
+            <span class="material-symbols-outlined text-[17px]">search</span>
+        </button>
+
+        <!-- Circular Chat/Message Icon -->
+        <button type="button"
+                aria-label="Messages"
+                title="Mensajes"
+                class="relative w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors shadow-xs">
+            <span class="material-symbols-outlined text-[17px]">chat_bubble</span>
+            @if (AuthService.CurrentUser.UnreadMessagesCount > 0)
+            {
+                <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-white dark:ring-slate-900"></span>
+            }
+        </button>
+
+        <!-- Dark / Light Mode Capsule Switcher -->
+        <div class="flex items-center p-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 ml-1">
+            <button type="button"
+                    @onclick="() => SetTheme(false)"
+                    title="Modo claro"
+                    class="w-7 h-7 rounded-full flex items-center justify-center transition-all @(!ThemeService.IsDarkMode ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600")">
+                <span class="material-symbols-outlined text-[16px]">light_mode</span>
+            </button>
+            <button type="button"
+                    @onclick="() => SetTheme(true)"
+                    title="Modo oscuro"
+                    class="w-7 h-7 rounded-full flex items-center justify-center transition-all @(ThemeService.IsDarkMode ? "bg-slate-700 text-white shadow-sm" : "text-slate-400 hover:text-slate-200")">
+                <span class="material-symbols-outlined text-[16px]">dark_mode</span>
+            </button>
+        </div>
+
+        <!-- Primary Pill Action Button: Create new order -->
+        <button type="button"
+                @onclick="HandleCreateOrder"
+                class="h-9 px-4 sm:px-5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-[12.5px] sm:text-[13px] font-semibold tracking-tight shadow-sm transition-all duration-150 active:scale-[0.98] flex items-center justify-center ml-1 whitespace-nowrap cursor-pointer"
+                style="box-shadow: rgba(37, 99, 235, 0.35) 0px 4px 14px -1px;">
+            <span class="hidden sm:inline">Create new order</span>
+            <span class="sm:hidden flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">add</span> Order
+            </span>
+        </button>
+    </div>
+</header>
+
+@code {
+    [Parameter]
+    public EventCallback OnOpenMobileSidebar { get; set; }
+
+    [Parameter]
+    public EventCallback OnCreateOrder { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ThemeService.InitializeAsync();
+            ThemeService.OnThemeChanged += StateHasChanged;
+            AuthService.OnAuthStateChanged += StateHasChanged;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SetTheme(bool isDark)
+    {
+        await ThemeService.SetThemeAsync(isDark);
+    }
+
+    private async Task HandleCreateOrder()
+    {
+        if (OnCreateOrder.HasDelegate)
+        {
+            await OnCreateOrder.InvokeAsync();
+        }
+    }
+
+    private string GetFirstName()
+    {
+        var fullName = AuthService.CurrentUser.Name;
+        if (string.IsNullOrWhiteSpace(fullName)) return "User";
+        return fullName.Split(' ')[0];
+    }
+}

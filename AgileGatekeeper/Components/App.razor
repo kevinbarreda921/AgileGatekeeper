@@ -1,10 +1,84 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es" class="h-full">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+    <title>Agile Gatekeeper</title>
+
+    <!-- Google Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,200..400,0..1,-25..0&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS with Forms and Container Queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            400: '#38bdf8',
+                            500: '#0284c7',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        surface: {
+                            canvas: 'var(--canvas-bg)',
+                            card: 'var(--card-bg)',
+                            border: 'var(--border-subtle)',
+                            muted: 'var(--muted-bg)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'subtle': '0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02)',
+                        'modal': '0 20px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.03)',
+                        'spotlight': '0 0 0 1px rgba(37, 99, 235, 0.15), 0 8px 24px -4px rgba(0, 0, 0, 0.06)',
+                        'custom-card': '0 25px 50px -12px rgba(148, 163, 184, 0.35)',
+                        'custom-btn': '0 8px 20px -4px rgba(37, 99, 235, 0.4)'
+                    }
+                }
+            }
+        };
+
+        window.themeManager = {
+            setTheme: function(isDark) {
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                }
+            },
+            isDark: function() {
+                const stored = localStorage.getItem('theme');
+                if (stored) {
+                    return stored === 'dark';
+                }
+                return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            },
+            init: function() {
+                if (this.isDark()) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        };
+        window.themeManager.init();
+    </script>
+
     <ResourcePreloader />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["AgileGatekeeper.styles.css"]" />
@@ -12,8 +86,8 @@
     <HeadOutlet />
 </head>
 
-<body>
-    <Routes />
+<body class="h-full bg-[var(--canvas-bg)] text-slate-800 dark:text-slate-100 antialiased selection:bg-brand-500 selection:text-white transition-colors duration-200">
+    <Routes @rendermode="InteractiveServer" />
     <ReconnectModal />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
