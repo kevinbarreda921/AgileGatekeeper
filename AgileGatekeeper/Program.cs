@@ -1,5 +1,6 @@
 using AgileGatekeeper.Components;
-using AgileGatekeeper.Services;
+using AgileGatekeeper.Services.Auth;
+using AgileGatekeeper.Services.Theme;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,6 +1,6 @@
-namespace AgileGatekeeper.Models;
-
 using System.ComponentModel.DataAnnotations;
+
+namespace AgileGatekeeper.Models.Auth;
 
 public class LoginModel
 {

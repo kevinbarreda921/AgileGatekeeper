@@ -1,12 +1,12 @@
-namespace AgileGatekeeper.Services;
-
 using Microsoft.JSInterop;
+
+namespace AgileGatekeeper.Services.Theme;
 
 public class ThemeService : IThemeService
 {
     private readonly IJSRuntime _jsRuntime;
-    private bool _isDarkMode = false;
-    private bool _initialized = false;
+    private bool _isDarkMode;
+    private bool _initialized;
 
     public bool IsDarkMode => _isDarkMode;
     public event Action? OnThemeChanged;
@@ -28,7 +28,7 @@ public class ThemeService : IThemeService
         }
         catch
         {
-            // Silently fallback if JS is not available during prerendering
+            // Ignorar durante prerenderizado estático
         }
     }
 
@@ -46,7 +46,7 @@ public class ThemeService : IThemeService
         }
         catch
         {
-            // Ignore during prerender
+            // Ignorar si JS aún no está disponible
         }
         OnThemeChanged?.Invoke();
     }

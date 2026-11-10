@@ -1,0 +1,71 @@
+@inject NavigationManager Navigation
+
+<NavLink href="@Href" Match="@Match" class="@GetLinkClass()" title="@(IsCollapsed ? Label : null)">
+    <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-[19px] @(IsRouteActive() ? "text-white filled" : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300")">
+            @Icon
+        </span>
+        @if (!IsCollapsed)
+        {
+            <span class="sidebar-text">@Label</span>
+        }
+    </div>
+
+    @if (!IsCollapsed)
+    {
+        @if (BadgeCount > 0)
+        {
+            <span class="w-5 h-5 rounded-full @(IsRouteActive() ? "bg-white text-blue-600" : "bg-blue-600/90 text-white") text-[11px] font-semibold flex items-center justify-center shadow-xs">
+                @BadgeCount
+            </span>
+        }
+        else if (IsRouteActive())
+        {
+            <span class="material-symbols-outlined text-[16px] text-white/90">chevron_right</span>
+        }
+    }
+</NavLink>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Href { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string Icon { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool IsCollapsed { get; set; }
+
+    [Parameter]
+    public int BadgeCount { get; set; }
+
+    [Parameter]
+    public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
+
+    private bool IsRouteActive()
+    {
+        var relative = Navigation.ToBaseRelativePath(Navigation.Uri).Trim('/');
+        var cleanRoute = Href.Trim('/');
+
+        if (string.IsNullOrEmpty(cleanRoute))
+        {
+            return string.IsNullOrEmpty(relative);
+        }
+
+        return relative.Equals(cleanRoute, StringComparison.OrdinalIgnoreCase) ||
+               relative.StartsWith(cleanRoute + "/", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private string GetLinkClass()
+    {
+        if (IsRouteActive())
+        {
+            return "flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-medium text-[13.5px] shadow-sm transition-all duration-150 cursor-pointer";
+        }
+
+        return "flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 text-[13.5px] font-medium transition-colors group cursor-pointer";
+    }
+}

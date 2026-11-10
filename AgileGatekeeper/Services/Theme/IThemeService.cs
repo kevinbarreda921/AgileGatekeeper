@@ -1,4 +1,4 @@
-namespace AgileGatekeeper.Services;
+namespace AgileGatekeeper.Services.Theme;
 
 public interface IThemeService
 {

@@ -1,17 +1,15 @@
 @page "/login"
 @layout LoginLayout
-@rendermode InteractiveServer
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
 
 <PageTitle>Login - Agile Gatekeeper</PageTitle>
 
 <main class="w-full min-h-screen h-full grid grid-cols-1 md:grid-cols-2 relative overflow-hidden bg-white dark:bg-[#0c1322]">
-    <!-- BEGIN: LeftPanel (Branding & Graphic Background) -->
+    <!-- LeftPanel (Branding & Graphic Background) -->
     <section class="wave-bg relative flex flex-col justify-between p-8 sm:p-12 md:p-16 lg:p-20 text-white overflow-hidden min-h-[380px] md:min-h-screen h-full"
              style="background: linear-gradient(145deg, rgb(59, 130, 246) 0%, rgb(37, 99, 235) 55%, rgb(29, 78, 216) 100%);">
         
-        <!-- Vector Background Art / Waves -->
         <div aria-hidden="true" class="wave-shape-1"></div>
         <div aria-hidden="true" class="wave-shape-2"></div>
 
@@ -32,9 +30,8 @@
             </p>
         </footer>
     </section>
-    <!-- END: LeftPanel -->
 
-    <!-- BEGIN: RightPanel (Login Form) -->
+    <!-- RightPanel (Login Form) -->
     <section class="bg-white dark:bg-[#0c1322] flex flex-col justify-center items-center px-6 py-12 sm:px-12 md:px-16 lg:px-24 z-20 min-h-screen h-full w-full">
         <!-- Heading Section -->
         <div class="text-center mb-8">
@@ -52,7 +49,7 @@
 
             @if (!string.IsNullOrEmpty(errorMessage))
             {
-                <div class="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs text-center font-medium animate-fadeIn">
+                <div class="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs text-center font-medium">
                     @errorMessage
                 </div>
             }
@@ -149,17 +146,12 @@
             </div>
         </EditForm>
     </section>
-    <!-- END: RightPanel -->
 </main>
 
 @code {
-    private LoginModel loginModel = new()
-    {
-        Email = "jack.ryad@agilegatekeeper.io"
-    };
-
-    private bool showPassword = false;
-    private bool isLoading = false;
+    private LoginModel loginModel = new();
+    private bool showPassword;
+    private bool isLoading;
     private string? errorMessage;
 
     private void TogglePasswordVisibility()

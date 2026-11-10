@@ -1,5 +1,7 @@
 @inject IAuthService AuthService
 @inject IThemeService ThemeService
+@inject NavigationManager Navigation
+@implements IDisposable
 
 <header class="h-20 bg-transparent px-4 sm:px-8 flex items-center justify-between shrink-0 z-20">
     <!-- Left Section: Mobile Menu Button + Greeting -->
@@ -27,9 +29,10 @@
     <div class="flex items-center gap-2 sm:gap-2.5">
         <!-- Circular Notification Icon -->
         <button type="button"
+                @onclick='() => Navigation.NavigateTo("/notifications")'
                 aria-label="Notifications"
                 title="Notificaciones"
-                class="relative w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors shadow-xs">
+                class="relative w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors shadow-xs cursor-pointer">
             <span class="material-symbols-outlined text-[17px]">notifications</span>
             @if (AuthService.CurrentUser.UnreadNotificationsCount > 0)
             {
@@ -41,15 +44,16 @@
         <button type="button"
                 aria-label="Search"
                 title="Buscar"
-                class="w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors shadow-xs">
+                class="w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors shadow-xs cursor-pointer">
             <span class="material-symbols-outlined text-[17px]">search</span>
         </button>
 
         <!-- Circular Chat/Message Icon -->
         <button type="button"
+                @onclick='() => Navigation.NavigateTo("/messages")'
                 aria-label="Messages"
                 title="Mensajes"
-                class="relative w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors shadow-xs">
+                class="relative w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors shadow-xs cursor-pointer">
             <span class="material-symbols-outlined text-[17px]">chat_bubble</span>
             @if (AuthService.CurrentUser.UnreadMessagesCount > 0)
             {
@@ -62,13 +66,13 @@
             <button type="button"
                     @onclick="() => SetTheme(false)"
                     title="Modo claro"
-                    class="w-7 h-7 rounded-full flex items-center justify-center transition-all @(!ThemeService.IsDarkMode ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600")">
+                    class="w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer @(!ThemeService.IsDarkMode ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600")">
                 <span class="material-symbols-outlined text-[16px]">light_mode</span>
             </button>
             <button type="button"
                     @onclick="() => SetTheme(true)"
                     title="Modo oscuro"
-                    class="w-7 h-7 rounded-full flex items-center justify-center transition-all @(ThemeService.IsDarkMode ? "bg-slate-700 text-white shadow-sm" : "text-slate-400 hover:text-slate-200")">
+                    class="w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer @(ThemeService.IsDarkMode ? "bg-slate-700 text-white shadow-sm" : "text-slate-400 hover:text-slate-200")">
                 <span class="material-symbols-outlined text-[16px]">dark_mode</span>
             </button>
         </div>
@@ -98,10 +102,15 @@
         if (firstRender)
         {
             await ThemeService.InitializeAsync();
-            ThemeService.OnThemeChanged += StateHasChanged;
-            AuthService.OnAuthStateChanged += StateHasChanged;
+            ThemeService.OnThemeChanged += HandleStateChanged;
+            AuthService.OnAuthStateChanged += HandleStateChanged;
             StateHasChanged();
         }
+    }
+
+    private void HandleStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task SetTheme(bool isDark)
@@ -122,5 +131,11 @@
         var fullName = AuthService.CurrentUser.Name;
         if (string.IsNullOrWhiteSpace(fullName)) return "User";
         return fullName.Split(' ')[0];
+    }
+
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= HandleStateChanged;
+        AuthService.OnAuthStateChanged -= HandleStateChanged;
     }
 }

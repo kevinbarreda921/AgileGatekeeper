@@ -1,6 +1,6 @@
-namespace AgileGatekeeper.Services;
+using AgileGatekeeper.Models.Users;
 
-using AgileGatekeeper.Models;
+namespace AgileGatekeeper.Services.Auth;
 
 public interface IAuthService
 {

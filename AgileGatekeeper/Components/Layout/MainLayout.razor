@@ -1,6 +1,7 @@
 @inherits LayoutComponentBase
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
+@implements IDisposable
 
 <div class="flex h-screen w-screen overflow-hidden bg-[var(--canvas-bg)] text-slate-800 dark:text-slate-100 transition-colors duration-200">
     <!-- Mobile Backdrop -->
@@ -10,25 +11,22 @@
              @onclick="CloseMobileSidebar"></div>
     }
 
-    <!-- 1. BARRA LATERAL (Componente Modular Separado) -->
+    <!-- 1. BARRA LATERAL (Componente Modular en Layout/Menu) -->
     <Sidebar @bind-IsCollapsed="isSidebarCollapsed"
              IsMobileOpen="isMobileSidebarOpen"
              OnCloseMobile="CloseMobileSidebar" />
 
     <!-- 2. CONTENEDOR PRINCIPAL -->
     <div class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50/50 dark:bg-[#090d16] min-w-0">
-        <!-- HEADER (Componente Modular Separado) -->
+        <!-- HEADER (Componente Modular en Layout/Menu) -->
         <Header OnOpenMobileSidebar="OpenMobileSidebar"
-                OnCreateOrder="OpenCreateOrderDialog" />
+                OnCreateOrder="NavigateToOrders" />
 
         <!-- 3. ÁREA DE CONTENIDO CENTRAL -->
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 flex flex-col">
             @Body
         </main>
     </div>
-
-    <!-- Quick Auth Modal -->
-    <AuthModal @bind-IsOpen="isAuthModalOpen" />
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
@@ -38,9 +36,8 @@
 </div>
 
 @code {
-    private bool isSidebarCollapsed = false;
-    private bool isMobileSidebarOpen = false;
-    private bool isAuthModalOpen = false;
+    private bool isSidebarCollapsed;
+    private bool isMobileSidebarOpen;
 
     protected override void OnInitialized()
     {
@@ -62,7 +59,7 @@
         isMobileSidebarOpen = false;
     }
 
-    private void OpenCreateOrderDialog()
+    private void NavigateToOrders()
     {
         Navigation.NavigateTo("/orders");
     }

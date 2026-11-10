@@ -1,0 +1,20 @@
+@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Error - Agile Gatekeeper</PageTitle>
+
+<WorkspacePlaceholder Title="Ha ocurrido un error inesperado"
+                      Description="No se pudo procesar la solicitud actual. Si el problema persiste, contacte al administrador."
+                      Icon="error"
+                      StatusText="@(ShowRequestId ? $"ID: {RequestId}" : "Error del sistema")" />
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

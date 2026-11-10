@@ -1,4 +1,4 @@
-namespace AgileGatekeeper.Models;
+namespace AgileGatekeeper.Models.Users;
 
 public class UserProfile
 {
