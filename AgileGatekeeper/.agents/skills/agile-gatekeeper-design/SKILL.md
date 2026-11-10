@@ -3,17 +3,50 @@ name: agile-gatekeeper-design
 description: >-
   Use this skill whenever creating, designing, styling, or modifying Blazor (.NET 10) UI
   pages, modules, forms, tables, cards, modals, or components in the AgileGatekeeper
-  project. Enforces the Cobalt Precision & Precision Enterprise SaaS design system,
-  Tailwind CSS tokens, Dark/Light mode support, and feature-folder component architecture.
+  project. Enforces 100% responsive mobile-first design, the Cobalt Precision & Precision
+  Enterprise SaaS design system, Tailwind CSS tokens, Dark/Light mode support, and
+  feature-folder component architecture.
 ---
 
 # AgileGatekeeper UI/UX Design & Component Architecture Skill
 
-This skill guides the creation of modern, high-craft enterprise interfaces in **AgileGatekeeper** using **Blazor (.NET 10 InteractiveServer)** and **Tailwind CSS**, following the **Cobalt Precision / Precision Enterprise SaaS** aesthetic.
+This skill guides the creation of modern, high-craft enterprise interfaces in **AgileGatekeeper** using **Blazor (.NET 10 InteractiveServer)** and **Tailwind CSS**, following the **Cobalt Precision / Precision Enterprise SaaS** aesthetic and enforcing **100% responsiveness across all viewports**.
 
 ---
 
-## 1. Architectural Placement Rules (Feature Folders)
+## 1. Regla Mandatoria: Diseño 100% Responsivo (Mobile-First & Fluid Breakpoints)
+
+**TODO componente, página, tabla, modal, formulario y elemento de navegación DEBE ser 100% responsivo.** Está estrictamente prohibido generar interfaces que causen desbordamiento horizontal (*overflow*), textos truncados de forma defectuosa o botones inaccesibles en dispositivos móviles o pantallas táctiles.
+
+### Reglas Específicas de Responsividad:
+1. **Shell y Navegación Adaptativa**:
+   - **Escritorio (`md:` / `≥ 768px`)**: Sidebar permanente con ancho dinámico (`w-64` expandido / `w-[72px]` colapsado).
+   - **Móvil y Tablet (`< 768px`)**: Sidebar en modo cajón deslizable (*off-canvas drawer*) con clase `-translate-x-full md:translate-x-0`, acompañado de un fondo desenfocado oscuro (`fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-xs md:hidden`) que se cierra al hacer clic fuera o pulsar el botón de cerrar.
+   - **Cabecera (`Header.razor`)**: Botón hamburguesa visible exclusivamente en móviles (`md:hidden`), textos de saludo compactados (`text-[18px] sm:text-[22px]`) y botones de acción que colapsan texto largo mostrando íconos en pantallas pequeñas (`hidden sm:inline`).
+
+2. **Grillas y Contenedores Fluidos**:
+   - **Tarjetas de Métricas / KPIs**: Nunca uses columnas fijas. Emplea grillas escalonadas:
+     `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4`.
+   - **Paneles Principales y Dashboards**: Distribución fluida de una a doce columnas:
+     `grid grid-cols-1 lg:grid-cols-12 gap-6`.
+   - **Espaciado del Canvas**: Acolchado exterior adaptativo: `p-4 sm:p-6 md:p-8`.
+
+3. **Tablas de Datos Empresariales Responsivas**:
+   - Toda tabla **DEBE** estar envuelta en un contenedor con desplazamiento horizontal fluido:
+     `<div class="overflow-x-auto w-full">`.
+   - Oculta columnas auxiliares o metadatos secundarios en pantallas reducidas usando utilidades como `hidden sm:table-cell` o `hidden lg:table-cell`.
+   - Las barras de herramientas de tablas (búsqueda, filtros, acciones) deben apilarse en móvil y alinearse en fila en escritorio:
+     `flex flex-col sm:flex-row sm:items-center justify-between gap-3`.
+
+4. **Formularios y Diálogos Modales**:
+   - Los campos de entrada (`InputText`, `InputSelect`, botones de acción) deben ocupar el ancho completo en móvil (`w-full sm:w-auto`).
+   - Los diálogos modales deben tener un margen de seguridad en móviles:
+     `w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto rounded-2xl p-4 sm:p-6`.
+   - **Objetivos Táctiles (Touch Targets)**: Altura mínima de interacción de `40px` a `44px` (`h-10` a `h-11`) para facilitar clics precisos en dispositivos táctiles.
+
+---
+
+## 2. Architectural Placement Rules (Feature Folders)
 
 Every `.razor` component, model, and service MUST be placed in its corresponding domain folder:
 
@@ -34,7 +67,7 @@ Every `.razor` component, model, and service MUST be placed in its corresponding
 
 ---
 
-## 2. Core Visual Identity (Cobalt Precision)
+## 3. Core Visual Identity (Cobalt Precision)
 
 When generating any UI element, adhere strictly to these visual pillars:
 
@@ -55,7 +88,7 @@ When generating any UI element, adhere strictly to these visual pillars:
    - **Micro-labels & Table Headers**: `text-[11.5px]` or `text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500`.
 
 3. **Shapes, Spacing & Elevation**:
-   - **Primary Cards & Containers**: `rounded-2xl` (`1rem`–`1.5rem`) with `p-5` or `p-6` internal padding and `shadow-subtle`.
+   - **Primary Cards & Containers**: `rounded-2xl` (`1rem`–`1.5rem`) with `p-4 sm:p-5 md:p-6` internal padding and `shadow-subtle`.
    - **Buttons & Inputs**: Pill-shaped (`rounded-full`) for primary CTAs and login controls, or `rounded-xl` (`0.75rem`) for dense module forms and toolbars.
    - **Status Badges**: Always full pills (`rounded-full px-2.5 py-1 text-xs font-medium`) with an optional `w-1.5 h-1.5 rounded-full` status dot.
 
@@ -67,7 +100,7 @@ When generating any UI element, adhere strictly to these visual pillars:
 
 ---
 
-## 3. Reference Documentation (Progressive Disclosure)
+## 4. Reference Documentation (Progressive Disclosure)
 
 Read these reference files when designing detailed views or components:
 
@@ -76,9 +109,10 @@ Read these reference files when designing detailed views or components:
 
 ---
 
-## 4. Verification Workflow
+## 5. Verification Workflow
 
 After creating or modifying any component or page:
-1. Ensure any new folder namespace is registered in `Components/_Imports.razor` if used globally.
-2. Run `dotnet build` to verify there are **0 errors and 0 warnings**.
-3. Confirm no `.razor.css` isolation files are created unless strictly necessary (prefer Tailwind utilities and `wwwroot/app.css` tokens).
+1. **Responsive Check**: Verify that layouts adapt across Mobile (`320px–639px`), Tablet (`640px–1023px`), and Desktop (`≥ 1024px`) without causing horizontal viewport overflow.
+2. Ensure any new folder namespace is registered in `Components/_Imports.razor` if used globally.
+3. Run `dotnet build` to verify there are **0 errors and 0 warnings**.
+4. Confirm no `.razor.css` isolation files are created unless strictly necessary (prefer Tailwind utilities and `wwwroot/app.css` tokens).
