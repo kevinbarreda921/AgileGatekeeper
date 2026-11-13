@@ -1,5 +1,7 @@
 using AgileGatekeeper.Components;
+using AgileGatekeeper.Models.Auth;
 using AgileGatekeeper.Services.Auth;
+using AgileGatekeeper.Services.Database;
 using AgileGatekeeper.Services.Theme;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Register Application Services
+// Strongly-typed options from appsettings.json
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<AuthenticationConfig>(builder.Configuration.GetSection("Authentication"));
+
+// Register Database, Security & Application Services (Dapper & JWT)
+builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
+builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IThemeService, ThemeService>();
 
